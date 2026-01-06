@@ -18,6 +18,7 @@
 !/env/dist/.gitkeep
 /env/user/*
 /.env*
+!/.env.sample
 /apps/joiner
 /deps/deno
 /data/sql/custom/*
@@ -25,6 +26,7 @@
 !/src/server/scripts/Custom/README.md
 
 /*.override.yml
+!/*.override.yml
 /*.override.yaml
 
 !.gitkeep

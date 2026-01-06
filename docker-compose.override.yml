@@ -1,0 +1,30 @@
+services:
+  ac-worldserver:
+    volumes:
+      - ./modules:/azerothcore/modules:ro
+    environment:
+      AC_AI_PLAYERBOT_RANDOM_BOT_AUTOLOGIN: "1"
+      AC_AI_PLAYERBOT_MIN_RANDOM_BOTS: "500"
+      AC_AI_PLAYERBOT_MAX_RANDOM_BOTS: "500"
+      AC_RATE_XP_KILL: "1"
+      # PvP Settings
+      AC_GameType: "1"
+      AC_PvPToken_Enable: "1"
+      AC_PvPToken_MapAllowType: "4"
+      AC_DurabilityLoss_InPvP: "1"
+  database-backup:
+    image: offen/docker-volume-backup:latest
+    restart: always
+    environment:
+      - BACKUP_CRON=${BACKUP_CRON:-0 3 * * *}
+      - BACKUP_FILENAME=${BACKUP_FILENAME:-backup-%Y-%m-%dT%H-%M-%S.tar.gz}
+      - BACKUP_RETENTION_DAYS=${BACKUP_RETENTION_DAYS:-7}
+      - BACKUP_PRUNING_LETTERS_DELETE=${BACKUP_PRUNING_LETTERS_DELETE:-y}
+      - AWS_S3_BUCKET_NAME=${BACKUP_AWS_S3_BUCKET_NAME}
+      - AWS_S3_PATH=${BACKUP_AWS_S3_PATH}
+      - AWS_ENDPOINT=${BACKUP_AWS_ENDPOINT}
+      - AWS_ACCESS_KEY_ID=${BACKUP_AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${BACKUP_AWS_SECRET_ACCESS_KEY}
+    volumes:
+      - ac-database:/backup/ac-database:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
