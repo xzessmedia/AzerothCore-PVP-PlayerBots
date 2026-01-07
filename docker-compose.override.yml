@@ -1,5 +1,9 @@
 services:
+  ac-db-import:
+    user: root
+
   ac-worldserver:
+    user: root
     volumes:
       - ./modules:/azerothcore/modules:ro
     environment:
@@ -12,6 +16,10 @@ services:
       AC_PvPToken_Enable: "1"
       AC_PvPToken_MapAllowType: "4"
       AC_DurabilityLoss_InPvP: "1"
+
+  ac-authserver:
+    user: root
+
   database-backup:
     image: offen/docker-volume-backup:latest
     restart: always
