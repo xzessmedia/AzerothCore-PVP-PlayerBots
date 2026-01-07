@@ -22,6 +22,12 @@ services:
       timeout: 10s
       retries: 40
 
+  ac-client-data-init:
+    container_name: ac-client-data-init
+    image: registry.mountainlabs.eu/acore/ac-wotlk-client-data:${DOCKER_IMAGE_TAG:-master}
+    volumes:
+      - ${DOCKER_VOL_DATA:-ac-client-data}:/azerothcore/env/dist/data
+
   ac-db-import:
     container_name: ac-db-import
     image: registry.mountainlabs.eu/acore/ac-wotlk-db-import:${DOCKER_IMAGE_TAG:-master}
@@ -36,16 +42,11 @@ services:
     volumes:
       - ${DOCKER_VOL_ETC:-./env/dist/etc}:/azerothcore/env/dist/etc
       - ${DOCKER_VOL_LOGS:-./env/dist/logs}:/azerothcore/env/dist/logs:delegated
+    user: root
     restart: "no"
     depends_on:
       ac-database:
         condition: service_healthy
-
-  ac-client-data-init:
-    container_name: ac-client-data-init
-    image: registry.mountainlabs.eu/acore/ac-wotlk-client-data:${DOCKER_IMAGE_TAG:-master}
-    volumes:
-      - ${DOCKER_VOL_DATA:-ac-client-data}:/azerothcore/env/dist/data
 
   ac-worldserver:
     container_name: ac-worldserver
@@ -55,6 +56,7 @@ services:
     stdin_open: true
     tty: true
     restart: unless-stopped
+    user: root
     env_file:
         ${DOCKER_AC_ENV_FILE:-conf/dist/env.ac}
     environment:
@@ -74,8 +76,6 @@ services:
     depends_on:
       ac-database:
         condition: service_healthy
-      ac-client-data-init:
-        condition: service_completed_successfully
 
   ac-authserver:
     container_name: ac-authserver
@@ -84,6 +84,7 @@ services:
       - ac-network
     tty: true
     restart: unless-stopped
+    user: root
     env_file:
         ${DOCKER_AC_ENV_FILE:-conf/dist/env.ac}
     environment:
