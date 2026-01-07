@@ -36,9 +36,16 @@ services:
     volumes:
       - ${DOCKER_VOL_ETC:-./env/dist/etc}:/azerothcore/env/dist/etc
       - ${DOCKER_VOL_LOGS:-./env/dist/logs}:/azerothcore/env/dist/logs:delegated
+    restart: "no"
     depends_on:
       ac-database:
         condition: service_healthy
+
+  ac-client-data-init:
+    container_name: ac-client-data-init
+    image: registry.mountainlabs.eu/acore/ac-wotlk-client-data:${DOCKER_IMAGE_TAG:-master}
+    volumes:
+      - ${DOCKER_VOL_DATA:-ac-client-data}:/azerothcore/env/dist/data
 
   ac-worldserver:
     container_name: ac-worldserver
@@ -67,8 +74,6 @@ services:
     depends_on:
       ac-database:
         condition: service_healthy
-      ac-db-import:
-        condition: service_completed_successfully
       ac-client-data-init:
         condition: service_completed_successfully
 
@@ -93,14 +98,6 @@ services:
     depends_on:
       ac-database:
         condition: service_healthy
-      ac-db-import:
-        condition: service_completed_successfully
-
-  ac-client-data-init:
-    container_name: ac-client-data-init
-    image: registry.mountainlabs.eu/acore/ac-wotlk-client-data:${DOCKER_IMAGE_TAG:-master}
-    volumes:
-      - ${DOCKER_VOL_DATA:-ac-client-data}:/azerothcore/env/dist/data
 
 volumes:
   ac-database:
